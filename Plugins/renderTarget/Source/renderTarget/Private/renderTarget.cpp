@@ -59,7 +59,7 @@ TComPtr<ID3D11Texture2D> GenerateTexture(TRefCountPtr<ID3D11Device> pDevice, int
 		D3D11_TEXTURE2D_DESC desc = {};
 		desc.ArraySize = 1;
 		desc.MipLevels = 1;
-		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		desc.Format = DXGI_FORMAT_NV12;
 		desc.Width = width;
 		desc.Height = height;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
