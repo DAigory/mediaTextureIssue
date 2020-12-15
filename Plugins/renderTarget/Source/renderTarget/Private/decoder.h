@@ -35,7 +35,7 @@ public:
 	TUniquePtr<FThread> DecodingThread;
 	std::atomic<bool> isDecodingEnable = true;
 
-	ID3D11Texture2D* texture = nullptr;
+	//ID3D11Texture2D* texture = nullptr;
 	void DecodeThreadFunc();
 	void StartDecode();
 

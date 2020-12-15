@@ -8,6 +8,7 @@
 #include <vector>
 #include "Utils.h"
 #include "decoder.h"
+#include "DecodingSettings.h"
 
 
 #define LOCTEXT_NAMESPACE "FrenderTargetModule"
@@ -25,45 +26,7 @@ void FrenderTargetModule::ShutdownModule()
 	FGameModeEvents::GameModeLogoutEvent.Remove(OnExitGame);
 }
 
-TComPtr<ID3D11Texture2D> GenerateTexture(TRefCountPtr<ID3D11Device> pDevice, int32_t width, int32_t height) {
-	TComPtr<ID3D11ShaderResourceView> pSRVTexture;
-	TComPtr<ID3D11Texture2D> pTexture;
-	{
-		D3D11_TEXTURE2D_DESC desc = {};
-		desc.ArraySize = 1;
-		desc.MipLevels = 1;
-		desc.Format = DXGI_FORMAT_NV12;
-		desc.Width = width;
-		desc.Height = height;
-		desc.BindFlags = 512;
-		desc.SampleDesc.Count = 1;
-		desc.SampleDesc.Quality = 0;
 
-		//You can pass texture data in pInitialData
-		pDevice->CreateTexture2D(&desc, nullptr, (ID3D11Texture2D**)&pTexture);
-		pDevice->CreateShaderResourceView(pTexture.Get(), nullptr, (ID3D11ShaderResourceView**)&pSRVTexture);
-	}
-
-
-	TComPtr<ID3D11DeviceContext> pImmediateContext;
-	pDevice->GetImmediateContext((ID3D11DeviceContext**)&pImmediateContext);
-
-
-	std::vector<uint8_t> textureData(4ull * width * height);
-	/*for (size_t y = 0; y < height; y++) {
-		for (size_t x = 0; x < width; x++) {
-			auto const currentPixelIndex = ((y * width) + x);
-
-			textureData[4 * currentPixelIndex + 0] = static_cast<uint8_t>(0);
-			textureData[4 * currentPixelIndex + 1] = static_cast<uint8_t>(0);
-			textureData[4 * currentPixelIndex + 2] = static_cast<uint8_t>(255);
-			textureData[4 * currentPixelIndex + 3] = 255;
-		}
-	}*/
-
-	pImmediateContext->UpdateSubresource(pTexture.Get(), 0, nullptr, std::data(textureData), 4 * width, 0);
-	return pTexture;
-}
 
 void FrenderTargetModule::OnGameModePostLogin(AGameModeBase* GameMode, APlayerController* NewPlayer)
 {
@@ -75,14 +38,14 @@ void FrenderTargetModule::OnGameModePostLogin(AGameModeBase* GameMode, APlayerCo
 	else
 	{		
 		
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < GetDefault<UDecodingSettings>()->DecodersCount; i++)
 		{
 			auto decoder = new Decoder();
 			{
 				decoder->D3D11Device = D3D11Device;
 				decoder->D3DImmediateContext = D3DImmediateContext;
 				decoder->DXGIManager = DXGIManager;
-				decoder->texture = GenerateTexture(D3D11Device, 640, 480).Get();
+				//decoder->texture = GenerateTexture(D3D11Device, 640, 480).Get();
 			}
 			decoder->StartDecode();
 			decoders.Add(decoder);
