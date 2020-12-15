@@ -246,11 +246,11 @@ struct FRHICommandCopyResource2 final : public FRHICommand<FRHICommandCopyResour
 									// Key is 1 : Texture as just been updated
 									// Key is 2 : Texture as already been updated.
 									// Do not wait to acquire key 1 since there is race no condition between writer and reader.
-									if (KeyedMutex->AcquireSync(1, 0) == S_OK)
+									if (KeyedMutex->AcquireSync(1, INFINITE) == S_OK)
 									{
 										// Copy from shared texture of FWmfMediaSink device to Rendering device
 										D3D11DeviceContext->CopyResource(DestinationTexture, SharedResource);
-										KeyedMutex->ReleaseSync(2);
+										KeyedMutex->ReleaseSync(1);
 									}
 									else
 									{
