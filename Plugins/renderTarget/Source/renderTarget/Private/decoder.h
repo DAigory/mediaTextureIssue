@@ -1,6 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
 #pragma once
-
 #include "Windows/AllowWindowsPlatformTypes.h"
 THIRD_PARTY_INCLUDES_START
 #define WIN32_LEAN_AND_MEAN
@@ -15,14 +13,9 @@ THIRD_PARTY_INCLUDES_START
 THIRD_PARTY_INCLUDES_END
 #include "Windows/HideWindowsPlatformTypes.h"
 
+#include "HAL/Thread.h"
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
-#include "HAL/Thread.h"
-
-
-class FEvent;
-class IMediaTextureSample;
-class Decoder;
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -32,24 +25,23 @@ struct IDirect3DDevice9;
 struct IDirect3DDeviceManager9;
 struct IMFSample;
 
-
-class FrenderTargetModule : public IModuleInterface
+class Decoder
 {
 public:
-	TArray<Decoder*> decoders;
-	//FrenderTargetModule();
-	FDelegateHandle OnEnterGame;
-	FDelegateHandle OnExitGame;
-	/** IModuleInterface implementation */
-	virtual void StartupModule() override;
-	virtual void ShutdownModule() override;
-	void OnGameModePostLogin(AGameModeBase* GameMode, APlayerController* NewPlayer);
-	void OnGameModeLogout(AGameModeBase* GameMode, AController* Exiting);
+	Decoder();
+	~Decoder();
 	
-	
-	bool CreateDevice();
+
+	TUniquePtr<FThread> DecodingThread;
+	std::atomic<bool> isDecodingEnable = true;
+
+	ID3D11Texture2D* texture = nullptr;
+	void DecodeThreadFunc();
+	void StartDecode();
 
 	TRefCountPtr<IMFDXGIDeviceManager> DXGIManager;
 	TRefCountPtr<ID3D11Device> D3D11Device;
 	TRefCountPtr<ID3D11DeviceContext> D3DImmediateContext;
 };
+
+
