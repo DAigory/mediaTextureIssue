@@ -62,7 +62,7 @@ TComPtr<ID3D11Texture2D> GenerateTexture(TRefCountPtr<ID3D11Device> pDevice, int
 		desc.Format = DXGI_FORMAT_NV12;
 		desc.Width = width;
 		desc.Height = height;
-		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		desc.BindFlags = 512;
 		desc.SampleDesc.Count = 1;
 		desc.SampleDesc.Quality = 0;
 		
@@ -77,7 +77,7 @@ TComPtr<ID3D11Texture2D> GenerateTexture(TRefCountPtr<ID3D11Device> pDevice, int
 
 	
 	std::vector<uint8_t> textureData(4ull * width * height);
-	for (size_t y = 0; y < height; y++) {
+	/*for (size_t y = 0; y < height; y++) {
 		for (size_t x = 0; x < width; x++) {
 			auto const currentPixelIndex = ((y * width) + x);
 
@@ -86,7 +86,7 @@ TComPtr<ID3D11Texture2D> GenerateTexture(TRefCountPtr<ID3D11Device> pDevice, int
 			textureData[4 * currentPixelIndex + 2] = static_cast<uint8_t>(FMath::RandRange(0, 255));
 			textureData[4 * currentPixelIndex + 3] = 255;
 		}
-	}
+	}*/
 
 	pImmediateContext->UpdateSubresource(pTexture.Get(), 0, nullptr, std::data(textureData), 4 * width, 0);
 	return pTexture;
