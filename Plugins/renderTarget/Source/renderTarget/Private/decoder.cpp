@@ -111,7 +111,7 @@ void Decoder::DecodeThreadFunc()
 
 		if (KeyedMutex)
 		{
-			if (KeyedMutex->AcquireSync(0, 0) == S_OK)
+			if (KeyedMutex->AcquireSync(0, INFINITE) == S_OK)
 			{
 				D3DImmediateContext->CopySubresourceRegion(SharedTexture, 0, 0, 0, 0, texture, 0, &SrcBox);
 
