@@ -6,6 +6,10 @@
 #include <vector>
 #include "USingletone.h"
 
+DECLARE_STATS_GROUP(TEXT("LODZERO_Game"), STATGROUP_LODZERO, STATCAT_Advanced);
+DECLARE_CYCLE_STAT_EXTERN(TEXT("GetModuleByClass (Single)"), STAT_GetSingleModuleByClass, STATGROUP_LODZERO, RENDERTARGET_API);
+DEFINE_STAT(STAT_GetSingleModuleByClass);
+
 Decoder::Decoder()
 {
 	
@@ -54,7 +58,7 @@ TComPtr<ID3D11Texture2D> GenerateTexture(TRefCountPtr<ID3D11Device> pDevice, int
 
 
 	std::vector<uint8_t> textureData(4ull * width * height);
-	/*for (size_t y = 0; y < height; y++) {
+	for (size_t y = 0; y < height; y++) {
 		for (size_t x = 0; x < width; x++) {
 			auto const currentPixelIndex = ((y * width) + x);
 
@@ -63,7 +67,7 @@ TComPtr<ID3D11Texture2D> GenerateTexture(TRefCountPtr<ID3D11Device> pDevice, int
 			textureData[4 * currentPixelIndex + 2] = static_cast<uint8_t>(255);
 			textureData[4 * currentPixelIndex + 3] = 255;
 		}
-	}*/
+	}
 
 	pImmediateContext->UpdateSubresource(pTexture.Get(), 0, nullptr, std::data(textureData), 4 * width, 0);
 	return pTexture;
@@ -80,12 +84,14 @@ void Decoder::DecodeThreadFunc()
 	
 	while (isDecodingEnable)
 	{
-		if ((clock() - lastSendTime) < oneFrame)
+		SCOPE_CYCLE_COUNTER(STAT_GetSingleModuleByClass)
 		{
-			continue;
+			if ((clock() - lastSendTime) < oneFrame)
+			{
+				continue;
+			}
+			lastSendTime = clock() - ((clock() - lastSendTime) - oneFrame);
 		}
-		lastSendTime = clock() - ((clock() - lastSendTime) - oneFrame);
-
 		auto texture = GenerateTexture(D3D11Device, 640, 480);
 		TSharedRef<FWmfMediaHardwareVideoDecodingTextureSample, ESPMode::ThreadSafe> TextureSample = HwTextureSamplePool.AcquireShared();
 		ID3D11Texture2D* SharedTexture = TextureSample->InitializeSourceTexture(
@@ -121,7 +127,7 @@ void Decoder::DecodeThreadFunc()
 		D3DImmediateContext->Flush();
 		if (sendSomethingShaders->RenderTarget == nullptr)
 		{
-			sendSomethingShaders->RenderTarget = USingletone::PullRenderTarget();
+			sendSomethingShaders->RenderTarget = USingletone::PullRenderTarget();					
 		}
 		else
 		{

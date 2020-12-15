@@ -10,7 +10,7 @@ class RENDERTARGET_API USingletone : public UObject
 	GENERATED_BODY()
 
 public:
-	static TQueue<UTextureRenderTarget2D*> renderTargets;
+	static TQueue<UTextureRenderTarget2D*> renderTargets2;
 	UFUNCTION(BlueprintCallable, Category = "Singletone Delegates")
 		static USingletone* GetUSingletone()
 	{
@@ -26,7 +26,7 @@ public:
 		static void SetRenderTarget(UTextureRenderTarget2D* target)
 	{
 		UE_LOG(LogTemp, Log, TEXT("SetRenderTarget"));
-		renderTargets.Enqueue(target);		
+		renderTargets2.Enqueue(target);
 	}
 
 	static UTextureRenderTarget2D*  PullRenderTarget()
@@ -34,7 +34,7 @@ public:
 		FScopeLock lock(&pullCritical);
 		{
 			UTextureRenderTarget2D* pulled = nullptr;
-			if (renderTargets.Dequeue(pulled))
+			if (renderTargets2.Dequeue(pulled))
 			{
 				return pulled;
 			}			

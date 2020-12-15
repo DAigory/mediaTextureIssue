@@ -313,8 +313,7 @@ void SendSomethingShaders::RenderThreadeUpdate(FRHICommandListImmediate& RHICmdL
 	{
 		FShaderParameters shadersParams;
 		{
-			shadersParams.dxTexture = texture;
-			shadersParams.RenderTarget = RenderTarget;
+			shadersParams.dxTexture = texture;			
 		}
 	
 		DrawToRenderTarget_RenderThread(RHICmdList, shadersParams);
@@ -332,42 +331,42 @@ void SendSomethingShaders::DrawToRenderTarget_RenderThread3(FRHICommandListImmed
 
 void SendSomethingShaders::DrawToRenderTarget_RenderThread2(FRHICommandListImmediate& RHICmdList,  FShaderParameters& DrawParameters)
 {
-	FRHIRenderPassInfo RenderPassInfo(DrawParameters.RenderTarget->GetRenderTargetResource()->GetRenderTargetTexture(), ERenderTargetActions::Clear_Store);
-	RHICmdList.BeginRenderPass(RenderPassInfo, TEXT("ShaderPlugin_OutputToRenderTarget"));
+	//FRHIRenderPassInfo RenderPassInfo(RenderTarget->GetRenderTargetResource()->GetRenderTargetTexture(), ERenderTargetActions::Clear_Store);
+	//RHICmdList.BeginRenderPass(RenderPassInfo, TEXT("ShaderPlugin_OutputToRenderTarget"));
 
-	auto ShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);
-	TShaderMapRef<FSimplePassThroughVS> VertexShader(ShaderMap);
-	TShaderMapRef<FPixelShaderExamplePS> PixelShader(ShaderMap);
+	//auto ShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);
+	//TShaderMapRef<FSimplePassThroughVS> VertexShader(ShaderMap);
+	//TShaderMapRef<FPixelShaderExamplePS> PixelShader(ShaderMap);
 
-	// Set the graphic pipeline state.
-	FGraphicsPipelineStateInitializer GraphicsPSOInit;
-	RHICmdList.ApplyCachedRenderTargets(GraphicsPSOInit);
-	GraphicsPSOInit.BlendState = TStaticBlendState<>::GetRHI();
-	GraphicsPSOInit.RasterizerState = TStaticRasterizerState<>::GetRHI();
-	GraphicsPSOInit.DepthStencilState = TStaticDepthStencilState<false, CF_Always>::GetRHI();
-	GraphicsPSOInit.BoundShaderState.VertexDeclarationRHI = GFilterVertexDeclaration.VertexDeclarationRHI;
-	GraphicsPSOInit.BoundShaderState.VertexShaderRHI = VertexShader.GetVertexShader();
-	GraphicsPSOInit.BoundShaderState.PixelShaderRHI = PixelShader.GetPixelShader();
-	GraphicsPSOInit.PrimitiveType = PT_TriangleStrip;
-	SetGraphicsPipelineState(RHICmdList, GraphicsPSOInit);
+	//// Set the graphic pipeline state.
+	//FGraphicsPipelineStateInitializer GraphicsPSOInit;
+	//RHICmdList.ApplyCachedRenderTargets(GraphicsPSOInit);
+	//GraphicsPSOInit.BlendState = TStaticBlendState<>::GetRHI();
+	//GraphicsPSOInit.RasterizerState = TStaticRasterizerState<>::GetRHI();
+	//GraphicsPSOInit.DepthStencilState = TStaticDepthStencilState<false, CF_Always>::GetRHI();
+	//GraphicsPSOInit.BoundShaderState.VertexDeclarationRHI = GFilterVertexDeclaration.VertexDeclarationRHI;
+	//GraphicsPSOInit.BoundShaderState.VertexShaderRHI = VertexShader.GetVertexShader();
+	//GraphicsPSOInit.BoundShaderState.PixelShaderRHI = PixelShader.GetPixelShader();
+	//GraphicsPSOInit.PrimitiveType = PT_TriangleStrip;
+	//SetGraphicsPipelineState(RHICmdList, GraphicsPSOInit);
 
-	// Setup the pixel shader
-	FPixelShaderExamplePS::FParameters PassParameters;	
-	//PassParameters.ComputeShaderOutput = ComputeShaderOutput;
-	PassParameters.StartColor = FVector4(200, 100, 10, 200) / 255.0f;
-	PassParameters.EndColor = FVector4(100, 200, 1, 200) / 255.0f;
-	PassParameters.TextureSize = FVector2D(200, 200);
-	PassParameters.BlendFactor = 0.5;
-	SetShaderParameters(RHICmdList, PixelShader, PixelShader.GetPixelShader(), PassParameters);
+	//// Setup the pixel shader
+	//FPixelShaderExamplePS::FParameters PassParameters;	
+	////PassParameters.ComputeShaderOutput = ComputeShaderOutput;
+	//PassParameters.StartColor = FVector4(200, 100, 10, 200) / 255.0f;
+	//PassParameters.EndColor = FVector4(100, 200, 1, 200) / 255.0f;
+	//PassParameters.TextureSize = FVector2D(200, 200);
+	//PassParameters.BlendFactor = 0.5;
+	//SetShaderParameters(RHICmdList, PixelShader, PixelShader.GetPixelShader(), PassParameters);
 
-	// Draw
-	RHICmdList.SetStreamSource(0, GSimpleScreenVertexBuffer.VertexBufferRHI, 0);
-	RHICmdList.DrawPrimitive(0, 2, 1);
+	//// Draw
+	//RHICmdList.SetStreamSource(0, GSimpleScreenVertexBuffer.VertexBufferRHI, 0);
+	//RHICmdList.DrawPrimitive(0, 2, 1);
 
-	// Resolve render target
-	RHICmdList.CopyToResolveTarget(DrawParameters.RenderTarget->GetRenderTargetResource()->GetRenderTargetTexture(), DrawParameters.RenderTarget->GetRenderTargetResource()->TextureRHI, FResolveParams());
+	//// Resolve render target
+	//RHICmdList.CopyToResolveTarget(RenderTarget->GetRenderTargetResource()->GetRenderTargetTexture(), DrawParameters.RenderTarget->GetRenderTargetResource()->TextureRHI, FResolveParams());
 
-	RHICmdList.EndRenderPass();
+	//RHICmdList.EndRenderPass();
 }
 
 void SendSomethingShaders::DrawToRenderTarget_RenderThread(FRHICommandListImmediate& RHICmdList,  FShaderParameters& DrawParameters)
@@ -386,10 +385,10 @@ void SendSomethingShaders::DrawToRenderTarget_RenderThread(FRHICommandListImmedi
 	hints.bOutputSRGB = false;
 	hints.NumMips = 1;
 	
-	check(DrawParameters.RenderTarget != nullptr);
-	check(DrawParameters.RenderTarget->GetRenderTargetResource() != nullptr);
+	check(RenderTarget != nullptr);
+	check(RenderTarget->GetRenderTargetResource() != nullptr);
 	auto InSample = TextureSample;
-	auto InDstTexture = DrawParameters.RenderTarget->GetRenderTargetResource()->GetRenderTargetTexture();
+	auto InDstTexture = RenderTarget->GetRenderTargetResource()->GetRenderTargetTexture();
 
 	TComPtr<ID3D11Texture2D> SampleTexture = InSample->GetSourceTexture();
 	ID3D11Device* D3D11Device = static_cast<ID3D11Device*>(GDynamicRHI->RHIGetNativeDevice());
@@ -440,7 +439,7 @@ void SendSomethingShaders::DrawToRenderTarget_RenderThread(FRHICommandListImmedi
 		PixelShader->SetParameters(RHICmdList, PixelShader.GetPixelShader(), Y_SRV, UV_SRV, InSample->IsOutputSrgb());
 
 		RHICmdList.DrawPrimitive(0, 2, 1);
-		RHICmdList.CopyToResolveTarget(InDstTexture, DrawParameters.RenderTarget->GetRenderTargetResource()->TextureRHI, FResolveParams());
+		RHICmdList.CopyToResolveTarget(InDstTexture, RenderTarget->GetRenderTargetResource()->TextureRHI, FResolveParams());
 		RHICmdList.EndRenderPass();		
 	}
 	D3D11DeviceContext->Release();

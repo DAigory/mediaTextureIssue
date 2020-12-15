@@ -17,7 +17,6 @@ class SendSomethingShaders;
 
 struct FShaderParameters
 {
-	UTextureRenderTarget2D* RenderTarget;
 	TSharedPtr<FWmfMediaHardwareVideoDecodingTextureSample, ESPMode::ThreadSafe> dxTexture;
 };
 

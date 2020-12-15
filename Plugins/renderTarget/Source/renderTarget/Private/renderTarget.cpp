@@ -61,7 +61,7 @@ void FrenderTargetModule::OnGameModeLogout(AGameModeBase* GameMode, AController*
 		delete(decoder);
 	}
 	decoders.Empty();
-	USingletone::renderTargets.Empty();
+	USingletone::renderTargets2.Empty();
 }
 
 bool FrenderTargetModule::CreateDevice()
