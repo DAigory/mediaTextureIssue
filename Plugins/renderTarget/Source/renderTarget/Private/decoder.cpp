@@ -121,10 +121,7 @@ void Decoder::DecodeThreadFunc()
 		D3DImmediateContext->Flush();
 		if (sendSomethingShaders->RenderTarget == nullptr)
 		{
-			if (USingletone::renderTargets.IsEmpty() == false)
-			{
-				USingletone::renderTargets.Dequeue(sendSomethingShaders->RenderTarget);
-			}
+			sendSomethingShaders->RenderTarget = USingletone::PullRenderTarget();
 		}
 		else
 		{

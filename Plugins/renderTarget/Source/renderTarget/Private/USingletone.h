@@ -29,7 +29,22 @@ public:
 		renderTargets.Enqueue(target);		
 	}
 
+	static UTextureRenderTarget2D*  PullRenderTarget()
+	{		
+		FScopeLock lock(&pullCritical);
+		{
+			UTextureRenderTarget2D* pulled = nullptr;
+			if (renderTargets.Dequeue(pulled))
+			{
+				return pulled;
+			}			
+		}
+		return nullptr;
+		
+	}
+
 private:
+	static FCriticalSection pullCritical;
 	static void CreateInstance();
 	// The singleton object.
 	static USingletone* Singleton;

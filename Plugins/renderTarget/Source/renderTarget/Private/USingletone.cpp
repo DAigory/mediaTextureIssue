@@ -3,6 +3,7 @@
 
 USingletone* USingletone::Singleton = nullptr;
 TQueue<UTextureRenderTarget2D*> USingletone::renderTargets;
+FCriticalSection USingletone::pullCritical;
 
 void USingletone::CreateInstance()
 {
